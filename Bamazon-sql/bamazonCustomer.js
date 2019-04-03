@@ -1,5 +1,7 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var Table = require('cli-table');
+
 
 var connection = mysql.createConnection({
 	host:"localhost",
@@ -10,6 +12,8 @@ var connection = mysql.createConnection({
 	
 });
 
+
+
 connection.connect(function(err){
 	if(err){
 		console.log("error connecting:" + err.stack);
@@ -19,11 +23,10 @@ connection.connect(function(err){
 
 })
 
-
 function displayProduct(){
-	connection.query('SELECT * FROM products', function(err, res){
+	connection.query("SELECT * FROM products", function(err, res){
 		if(err) throw err;
-
+        console.table(res);
 		promptCustomerItem(res);
 
 	})
@@ -41,14 +44,14 @@ inquirer
 		}
 
 	}
-	]).then(function(inquirerResponse){
-		console.log(inquirerResponse)
-		checkExit(inquirerResponse.choice);
-		var choiceId= parseInt(inquirerResponse.choice);
+	]).then(function(val){
+		checkExit(val.choice);
+		var choiceId= parseInt(val.choice);
 		var product = checkProductIfExists(choiceId, item);
+    //console.log(product);
 
 		if(product){
-			promptUserForQuantity(product);
+			promptCustomerQuantity(product);
 		}
 		else{
 			console.log('\nThis item is out of stock.');
@@ -72,12 +75,15 @@ inquirer
 
 	}
 	]).then(function(inquirerResponse){
-		console.log(inquirerResponse)
-		checkExit(inquirerResponse.quantity);
-		var quantity= parseInt(inquirerResponse.quantity);
+    
+		//console.log(inquirerResponse,"responseofwar")
+		checkExit(inquirerResponse.stock_quality);
+		var productQuantity= parseInt(inquirerResponse.stock_quality);
+   console.log(productQuantity,"productquantity");
+   console.log(product.stock_quality,"productstock");
 
 
-		if(quantity>product.stock_quantity){
+		if(productQuantity > product.stock_quality){
 			console.log('\nThis item is out of stock.');
 			displayProduct();
 		}
@@ -90,18 +96,19 @@ inquirer
 
 
 function purchase(product, quantity){
+    console.log(quantity, "quantity")
 	connection.query('UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?',
 		[quantity, product.id],
 		function(err, res){
-			console.log("\n you have succefully purchased this "+ product.product.name +"product with quantity" + quantity);
+			console.log("\n you have succefully purchased this "+ product.product_name +"product with quantity" + quantity);
 			displayProduct();
 		})
 };
 
-function checkProductIfExists(choiceId, inventory){
-	for(var i=0; i< inventory.length ;i++){
-		if(inventory[i].id == choiceId){
-			return inventory[i];
+function checkProductIfExists(choiceId, item){
+	for(var i=0; i< item.length ;i++){
+		if(item[i].id === choiceId){
+			return item[i];
 		}
 	}
 	return null;
@@ -111,6 +118,7 @@ function checkProductIfExists(choiceId, inventory){
 
 
 function checkExit(choice){
+    console.log(choice,"choice");
 	if(choice.toLowerCase()=== 'q'){
 		console.log('succefully logged out');
 		process.exit(0);

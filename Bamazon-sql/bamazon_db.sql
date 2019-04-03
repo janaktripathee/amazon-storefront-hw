@@ -10,12 +10,12 @@ CREATE TABLE products(
 	product_name VARCHAR(255) NOT NULL,
 	department_name VARCHAR(255) NOT NULL,
 	price INT NOT NULL,
-	stock_quantity INT NOT NULL,
+	stock_quality INT NOT NULL,
 	PRIMARY KEY(id)
 
 );
 
-INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES ('Apple Iphone XR','Best Buy','800','5'),
+INSERT INTO products(product_name, department_name, price, stock_quality) VALUES ('Apple Iphone XR','Best Buy','800','5'),
 ('iPad Air','Frys','249','3'),
 ('Samsung-Galaxy Note8','Walmart','549','8'),
 ('Pizza Oven','Costco','55','9'),
